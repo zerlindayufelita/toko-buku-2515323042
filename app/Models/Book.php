@@ -12,10 +12,18 @@ class Book extends Model
         'author_name',
         'price',
         'category_id',
+        'publisher_id',
+        'cover',
+        'published_year',
     ];
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function publisher(): BelongsTo
+    {
+        return $this->belongsTo(Publisher::class);
     }
 }
