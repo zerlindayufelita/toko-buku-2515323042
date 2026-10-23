@@ -1,9 +1,21 @@
-<h1>{{ $buku['judul'] ?? 'Tidak ditemukan' }}</h1>
+@extends('layouts.app')
 
-@if ($buku)
-<p>Penulis: {{ $buku['penulis'] }}</p>
-@else
-<p>Tidak ada buku dengan id {{ $id }}.</p>
-@endif
+@section('title', 'Detail Buku — BookStore')
 
-<p><a href="/books">Kembali ke daftar buku</a></p>
+@section('content')
+<div class="card">
+    <div class="card-body">
+        <h1>{{ $buku->title }}</h1>
+
+        <p>Penulis: {{ $buku->author_name }}</p>
+
+        <p>Kategori: {{ $buku->category->name ?? '-' }}</p>
+
+        <p>Harga: Rp{{ number_format($buku->price, 0, ',', '.') }}</p>
+
+        <a href="{{ url('/books') }}" class="btn btn-secondary">
+            Kembali ke Daftar Buku
+        </a>
+    </div>
+</div>
+@endsection
