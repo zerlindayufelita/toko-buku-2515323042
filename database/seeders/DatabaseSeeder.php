@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             BookSeeder::class,
         ]);
 
+        $this->call(PublisherSeeder::class);
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
