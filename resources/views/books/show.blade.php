@@ -48,4 +48,33 @@
         </div>
     </div>
 </div>
+
+<hr class="my-4">
+
+<h3 class="mb-3">Buku Lain dalam Kategori yang Sama</h3>
+
+<div class="row">
+    @forelse ($bukuLain as $item)
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            @if ($item->cover)
+            <img src="{{ asset('images/' . $item->cover) }}"
+                class="card-img-top"
+                alt="{{ $item->title }}">
+            @endif
+
+            <div class="card-body">
+                <h5 class="card-title">{{ $item->title }}</h5>
+                <p class="card-text">Penulis: {{ $item->author_name }}</p>
+                <a href="{{ route('books.show', $item->id) }}"
+                    class="btn btn-primary">
+                    Lihat Detail
+                </a>
+            </div>
+        </div>
+    </div>
+    @empty
+    <p>Belum ada buku lain dalam kategori ini.</p>
+    @endforelse
+</div>
 @endsection

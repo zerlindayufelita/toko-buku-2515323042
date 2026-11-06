@@ -11,6 +11,59 @@
     </a>
 </div>
 
+<form action="{{ route('books.index') }}" method="GET" class="mb-4">
+
+    <div class="row g-2">
+        <div class="col-md-5">
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Cari judul buku atau nama penulis..."
+                value="{{ $search ?? '' }}">
+        </div>
+
+        <div class="col-md-4">
+            <select name="category_id" class="form-select">
+                <option value="">-- Semua Kategori --</option>
+
+                @foreach ($categories as $category)
+                <option
+                    value="{{ $category->id }}"
+                    @selected(($selectedCategory ?? '' )==$category->id)
+                    >
+                    {{ $category->name }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select name="publisher_id" class="form-select">
+                <option value="">Semua Penerbit</option>
+
+                @foreach ($publishers as $publisher)
+                <option value="{{ $publisher->id }}"
+                    {{ request('publisher_id') == $publisher->id ? 'selected' : '' }}>
+                    {{ $publisher->name }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">
+                Cari / Filter
+            </button>
+
+            <a href="{{ route('books.index') }}" class="btn btn-secondary">
+                Reset
+            </a>
+        </div>
+    </div>
+
+</form>
+
 <div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach ($daftarBuku as $buku)
     <div class="col">
@@ -46,6 +99,16 @@
                     Penerbit: {{ $buku->publisher->name ?? '-' }}
                 </p>
 
+                <p class="card-text mb-1">
+                    Jumlah Stok: {{ $buku->stock }}
+                </p>
+
+                @if ($buku->stock > 0)
+                <span class="badge bg-success mb-2">Tersedia</span>
+                @else
+                <span class="badge bg-danger mb-2">Stok Habis</span>
+                @endif
+
                 <p class="card-text harga-buku">
                     Rp{{ number_format($buku->price, 0, ',', '.') }}
                 </p>
@@ -80,5 +143,8 @@
         </div>
     </div>
     @endforeach
+    <div class="d-flex justify-content-center mt-4">
+        {{ $daftarBuku->links() }}
+    </div>
 </div>
 @endsection

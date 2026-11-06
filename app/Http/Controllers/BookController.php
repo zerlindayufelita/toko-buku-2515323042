@@ -12,13 +12,36 @@ use Illuminate\Validation\Rule;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Book::with(['category', 'publisher']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('author_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('publisher_id')) {
+            $query->where('publisher_id', $request->publisher_id);
+        }
+
         return view('books.index', [
-            'daftarBuku' => Book::with(['category', 'publisher'])->get(),
+            'daftarBuku' => $query->paginate(6)->withQueryString(),
+            'search' => $request->search,
+            'categories' => Category::all(),
+            'selectedCategory' => $request->category_id,
+            'publishers' => Publisher::all(),
+            'selectedPublisher' => $request->publisher_id,
         ]);
     }
-
     public function create()
     {
         return view('books.create', [
@@ -33,6 +56,7 @@ class BookController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'author_name' => ['required', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
+            'stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['required', 'exists:categories,id'],
             'publisher_id' => ['nullable', 'exists:publishers,id'],
             'cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -54,13 +78,16 @@ class BookController extends Controller
             ->with('success', 'Buku berhasil ditambahkan.');
     }
 
-    public function show(Book $book)
+    public function show($id)
     {
-        $book->load(['category', 'publisher']);
+        $buku = Book::with('category')->findOrFail($id);
 
-        return view('books.show', [
-            'buku' => $book,
-        ]);
+        $bukuLain = Book::with('category')
+            ->where('category_id', $buku->category_id)
+            ->where('id', '!=', $buku->id)
+            ->get();
+
+        return view('books.show', compact('buku', 'bukuLain'));
     }
 
     public function edit(Book $book)
@@ -78,6 +105,7 @@ class BookController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'author_name' => ['required', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
+            'stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['required', 'exists:categories,id'],
             'publisher_id' => ['nullable', 'exists:publishers,id'],
             'cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],

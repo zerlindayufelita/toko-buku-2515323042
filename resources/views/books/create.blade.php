@@ -31,6 +31,21 @@
     </div>
 
     <div class="mb-3">
+        <label for="stock" class="form-label">Jumlah Stok</label>
+        <input
+            type="number"
+            name="stock"
+            id="stock"
+            class="form-control"
+            min="0"
+            value="{{ old('stock', 0) }}"
+            required>
+        @error('stock')
+        <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
         <label for="published_year" class="form-label">Tahun Terbit</label>
         <input
             type="number"
